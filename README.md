@@ -51,53 +51,26 @@
 * **[2023.12.4]** Release inference code and gradio demo. We are working to improve MagicAnimate, stay tuned!
 * **[2023.11.23]** Release MagicAnimate paper and project page.
 
-## 🏃‍♂️ Getting Started
-Please download the pretrained base models for [StableDiffusion V1.5](runwayml/stable-diffusion-v1-5) and [MSE-finetuned VAE](stabilityai/sd-vae-ft-mse).
-
-Download our MagicAnimate [checkpoints](https://huggingface.co/zcxu-eric/MagicAnimate).
-
-**Place them as follows:**
-```bash
-magic-animate
-|----pretrained_models
-  |----MagicAnimate
-    |----appearance_encoder
-      |----diffusion_pytorch_model.safetensors
-      |----config.json
-    |----densepose_controlnet
-      |----diffusion_pytorch_model.safetensors
-      |----config.json
-    |----temporal_attention
-      |----temporal_attention.ckpt
-  |----sd-vae-ft-mse
-    |----...
-  |----stable-diffusion-v1-5
-    |----...
-|----...
-```
-
 ## ⚒️ Installation
-prerequisites: `python>=3.8`, `CUDA>=11.3`, and `ffmpeg`.
+prerequisites: `python>=3.8`, `CUDA>=11.3`, `ffmpeg` and `git`.
 
-Install with `conda`: 
-```bash
-conda env create -f environment.yml
-conda activate manimate
-```
-or `pip`:
-```bash
-pip3 install -r requirements.txt
-```
+Python and Git:
 
-## 💃 Inference
-Run inference on single GPU:
-```bash
-bash scripts/animate.sh
-```
-Run inference with multiple GPUs:
-```bash
-bash scripts/animate_dist.sh
-```
+- Python 3.10.11: https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe
+- git: https://git-scm.com/download/win
+
+- Install [ffmpeg](https://ffmpeg.org/) for your operating system
+  (https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/)
+  
+  notice:step 4 use windows system Set Enviroment Path.
+
+Give unrestricted script access to powershell so venv can work:
+
+- Open an administrator powershell window
+- Type `Set-ExecutionPolicy Unrestricted` and answer A
+- Close admin powershell window
+
+Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
 
 ## 🎨 Gradio Demo 
 
@@ -107,13 +80,13 @@ Coming soon...
 
 #### Local Gradio Demo:
 Launch local gradio demo on single GPU:
-```bash
-python3 -m demo.gradio_animate
-```
+
+Powershell run with `run_gui.ps1`
+
 Launch local gradio demo if you have multiple GPUs:
-```bash
-python3 -m demo.gradio_animate_dist
-```
+
+Edit `run_gui.ps1` set `$mutil_gpu=1` then run.
+
 Then open gradio demo in local browser.
 
 ## 🎓 Citation
