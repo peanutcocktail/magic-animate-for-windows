@@ -11,5 +11,24 @@ if (!(Test-Path -Path "venv")) {
 Write-Output "Installing deps..."
 pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
 
+Write-Output "Checking models..."
+
+if (!(Test-Path -Path "pretrained_models")) {
+    Write-Output  "Creating pretrained_models..."
+    mkdir "pretrained_models"
+}
+
+Set-Location .\pretrained_models
+
+if (!(Test-Path -Path "MagicAnimate")) {
+    Write-Output  "Downloading MagicAnimate models..."
+    git clone https://huggingface.co/zcxu-eric/MagicAnimate
+}
+
+if (!(Test-Path -Path "stable-diffusion-v1-5")) {
+    Write-Output  "Downloading stable-diffusion-v1-5 models..."
+    git clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
+}
+
 Write-Output "Install completed"
 Read-Host | Out-Null ;
