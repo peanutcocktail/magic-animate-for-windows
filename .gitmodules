@@ -1,0 +1,3 @@
+[submodule "vid2pose"]
+	path = vid2pose
+	url = https://github.com/sdbds/vid2pose
