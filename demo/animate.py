@@ -43,7 +43,6 @@ from safetensors import safe_open
 import math
 from pathlib import Path
 
-
 class MagicAnimate:
     def __init__(self, config="configs/prompts/animation.yaml") -> None:
         print("Initializing MagicAnimate Pipeline...")
