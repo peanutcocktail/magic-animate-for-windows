@@ -25,9 +25,12 @@ if (!(Test-Path -Path "MagicAnimate")) {
     git clone https://huggingface.co/zcxu-eric/MagicAnimate
 }
 
-if (!(Test-Path -Path "stable-diffusion-v1-5")) {
+$install_SD15 = Read-Host "Do you need to download SD15? If you don't have any SD15 model locally select y, if you want to change to another SD1.5 model select n. [y/n] (Default is y)"
+if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq ""){
+    if (!(Test-Path -Path "stable-diffusion-v1-5")) {
     Write-Output  "Downloading stable-diffusion-v1-5 models..."
     git clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
+    }
 }
 
 Write-Output "Install completed"
