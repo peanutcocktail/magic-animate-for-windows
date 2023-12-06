@@ -3,35 +3,35 @@ Set-Location $PSScriptRoot
 $Env:PIP_DISABLE_PIP_VERSION_CHECK = 1
 
 if (!(Test-Path -Path "venv")) {
-    Write-Output  "´´½¨pythonĞéÄâ»·¾³venv..."
+    Write-Output  "åˆ›å»ºpythonè™šæ‹Ÿç¯å¢ƒvenv..."
     python -m venv venv
 }
 .\venv\Scripts\activate
 
-Write-Output "°²×°ÒÀÀµ..."
-pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
+Write-Output "å®‰è£…ä¾èµ–..."
+#pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
 
-Write-Output "¼ì²éÄ£ĞÍ..."
+Write-Output "æ£€æŸ¥æ¨¡å‹..."
 
 if (!(Test-Path -Path "pretrained_models")) {
-    Write-Output  "´´½¨Ä£ĞÍÎÄ¼ş¼Ğ..."
+    Write-Output  "åˆ›å»ºæ¨¡å‹æ–‡ä»¶å¤¹..."
     mkdir "pretrained_models"
 }
 
 Set-Location .\pretrained_models
 
 if (!(Test-Path -Path "MagicAnimate")) {
-    Write-Output  "ÏÂÔØMagicAnimateÄ£ĞÍ..."
+    Write-Output  "ä¸‹è½½MagicAnimateæ¨¡å‹..."
     git clone https://huggingface.co/zcxu-eric/MagicAnimate
 }
 if (Test-Path -Path "MagicAnimate/.git/lfs") {
     Remove-Item -Path MagicAnimate/.git/lfs/* -Recurse -Force
 }
 
-$install_SD15 = Read-Host "ÊÇ·ñĞèÒªÏÂÔØhuggingfaceµÄSD15Ä£ĞÍ? ÈôÄú±¾µØÃ»ÓĞÈÎºÎSD15Ä£ĞÍÑ¡Ôñy£¬Èç¹ûÏëÒª»»ÆäËûSD1.5Ä£ĞÍÑ¡Ôñ n¡£[y/n] (Ä¬ÈÏÎª y)"
+$install_SD15 = Read-Host "æ˜¯å¦éœ€è¦ä¸‹è½½huggingfaceçš„SD15æ¨¡å‹? è‹¥æ‚¨æœ¬åœ°æ²¡æœ‰ä»»ä½•SD15æ¨¡å‹é€‰æ‹©yï¼Œå¦‚æœæƒ³è¦æ¢å…¶ä»–SD1.5æ¨¡å‹é€‰æ‹© nã€‚[y/n] (é»˜è®¤ä¸º y)"
 if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq "") {
     if (!(Test-Path -Path "stable-diffusion-v1-5")) {
-        Write-Output  "ÏÂÔØ stable-diffusion-v1-5 Ä£ĞÍ..."
+        Write-Output  "ä¸‹è½½ stable-diffusion-v1-5 æ¨¡å‹..."
         git clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
         
     }
@@ -40,5 +40,7 @@ if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq "") {
     }
 }
 
-Write-Output "°²×°Íê±Ï"
+git submodule update --recursive --init
+
+Write-Output "å®‰è£…å®Œæ¯•"
 Read-Host | Out-Null ;
