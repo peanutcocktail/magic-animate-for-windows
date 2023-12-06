@@ -52,7 +52,7 @@ class UNet3DConditionOutput(BaseOutput):
     sample: torch.FloatTensor
 
 
-class UNet3DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin):
+class UNet3DConditionModel(ModelMixin, ConfigMixin):
     _supports_gradient_checkpointing = True
 
     @register_to_config
@@ -571,6 +571,39 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin)
             ]
             print(f"### Temporal Module Parameters: {sum(params) / 1e6} M")
         else:
+            config = {
+                "_class_name": "UNet2DConditionModel",
+                "_diffusers_version": "0.6.0",
+                "act_fn": "silu",
+                "attention_head_dim": 8,
+                "block_out_channels": [320, 640, 1280, 1280],
+                "center_input_sample": False,
+                "cross_attention_dim": 768,
+                "down_block_types": [
+                    "CrossAttnDownBlock3D",
+                    "CrossAttnDownBlock3D",
+                    "CrossAttnDownBlock3D",
+                    "DownBlock3D",
+                ],
+                "downsample_padding": 1,
+                "flip_sin_to_cos": True,
+                "freq_shift": 0,
+                "in_channels": 4,
+                "layers_per_block": 2,
+                "mid_block_scale_factor": 1,
+                "norm_eps": 1e-05,
+                "norm_num_groups": 32,
+                "out_channels": 4,
+                "sample_size": 64,
+                "up_block_types": [
+                    "UpBlock3D",
+                    "CrossAttnUpBlock3D",
+                    "CrossAttnUpBlock3D",
+                    "CrossAttnUpBlock3D",
+                ],
+            }
+            config["_class_name"] = cls.__name__
+            model = cls.from_config(config, **unet_additional_kwargs)
             state_dict = pretrained_model_path
             m, u = model.load_state_dict(state_dict, strict=False)
             print(f"### missing keys: {len(m)}; \n### unexpected keys: {len(u)};")

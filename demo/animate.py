@@ -78,7 +78,7 @@ class MagicAnimate:
             )
         else:
             unet = UNet3DConditionModel.from_pretrained_2d(
-                unet,
+                unet.config,
                 subfolder=None,
                 unet_additional_kwargs=OmegaConf.to_container(
                     inference_config.unet_additional_kwargs
@@ -99,7 +99,7 @@ class MagicAnimate:
             mode="read",
             fusion_blocks=config.fusion_blocks,
         )
-        if config.pretrained_vae_path is not None:
+        if config.pretrained_vae_path:
             vae = AutoencoderKL.from_pretrained(config.pretrained_vae_path)
         # else:
         #    vae = AutoencoderKL.from_pretrained(

@@ -78,7 +78,7 @@ def main(args):
         v2=False,
         v_pred=False,
     )
-    unet.
+
     # tokenizer = CLIPTokenizer.from_pretrained(
     #    config.pretrained_model_path, subfolder="tokenizer"
     # )
@@ -94,7 +94,7 @@ def main(args):
         )
     else:
         unet = UNet3DConditionModel.from_pretrained_2d(
-            unet,
+            unet.config,
             subfolder=None,
             unet_additional_kwargs=OmegaConf.to_container(
                 inference_config.unet_additional_kwargs
@@ -115,7 +115,7 @@ def main(args):
         mode="read",
         fusion_blocks=config.fusion_blocks,
     )
-    if config.pretrained_vae_path is not None:
+    if config.pretrained_vae_path:
         vae = AutoencoderKL.from_pretrained(config.pretrained_vae_path)
     # else:
     #    vae = AutoencoderKL.from_pretrained(
