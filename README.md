@@ -49,7 +49,7 @@
 
 ## 📢 News
 * **[2023.12.8]** Add loading  local safetensors or ckpt,you can change `config/prompts/animation.yaml` about `pretrained_model_path` for your local SD1.5 model.
-such as `D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt`
+such as `"D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt"`
 * **[2023.12.4]** Release inference code and gradio demo. We are working to improve MagicAnimate, stay tuned!
 * **[2023.11.23]** Release MagicAnimate paper and project page.
 
@@ -78,7 +78,7 @@ Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
 ###Use local model
 
 Add loading local safetensors or ckpt,you can change `config/prompts/animation.yaml` about `pretrained_model_path` for your local SD1.5 model.
-such as `D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt`
+such as `"D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt"`
 
 ## 🎨 Gradio Demo 
 
