@@ -9,7 +9,7 @@ if (!(Test-Path -Path "venv")) {
 .\venv\Scripts\activate
 
 Write-Output "安装依赖..."
-#pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
+pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
 
 Write-Output "检查模型..."
 
@@ -40,7 +40,18 @@ if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq "") {
     }
 }
 
+Write-Output "安装Video2Pose..."
+
 git submodule update --recursive --init
+
+Set-Location $PSScriptRoot/vid2pose
+git submodule update --recursive --init
+pip install ninja
+pip install -U -r requirements.txt -i https://mirror.baidu.com/pypi/simple
+mim install mmengine
+mim install "mmcv>=2.0.1"
+mim install "mmdet>=3.1.0"
+mim install "mmpose>=1.1.0"
 
 Write-Output "安装完毕"
 Read-Host | Out-Null ;
