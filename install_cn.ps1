@@ -9,7 +9,7 @@ if (!(Test-Path -Path "venv")) {
 .\venv\Scripts\activate
 
 Write-Output "安装依赖..."
-#pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
+pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
 
 Write-Output "检查模型..."
 
