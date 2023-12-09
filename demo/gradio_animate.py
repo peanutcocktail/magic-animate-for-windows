@@ -18,11 +18,26 @@ from demo.animate import MagicAnimate
 
 animator = MagicAnimate()
 
-def animate(reference_image, motion_sequence_state, seed, steps, guidance_scale):
-    return animator(reference_image, motion_sequence_state, seed, steps, guidance_scale)
+
+def animate(
+    reference_image,
+    motion_sequence_state,
+    seed,
+    steps,
+    guidance_scale,
+    controlnet_model,
+):
+    return animator(
+        reference_image,
+        motion_sequence_state,
+        seed,
+        steps,
+        guidance_scale,
+        controlnet_model,
+    )
+
 
 with gr.Blocks() as demo:
-
     gr.HTML(
         """
         <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
@@ -38,44 +53,55 @@ with gr.Blocks() as demo:
             </div>
         </div>
         </div>
-        """)
+        """
+    )
     animation = gr.Video(format="mp4", label="Animation Results", autoplay=True)
-    
+
     with gr.Row():
-        reference_image  = gr.Image(label="Reference Image")
-        motion_sequence  = gr.Video(format="mp4", label="Motion Sequence")
-        
+        reference_image = gr.Image(label="Reference Image")
+        motion_sequence = gr.Video(format="mp4", label="Motion Sequence")
+
         with gr.Column():
-            random_seed         = gr.Textbox(label="Random seed", value=1, info="default: -1")
-            sampling_steps      = gr.Textbox(label="Sampling steps", value=25, info="default: 25")
-            guidance_scale      = gr.Textbox(label="Guidance scale", value=7.5, info="default: 7.5")
-            submit              = gr.Button("Animate")
+            random_seed = gr.Textbox(label="Random seed", value=1, info="default: -1")
+            sampling_steps = gr.Textbox(
+                label="Sampling steps", value=25, info="default: 25"
+            )
+            guidance_scale = gr.Textbox(
+                label="Guidance scale", value=7.5, info="default: 7.5"
+            )
+            submit = gr.Button("Animate")
 
     def read_video(video):
         reader = imageio.get_reader(video)
-        fps = reader.get_meta_data()['fps']
+        fps = reader.get_meta_data()["fps"]
         return video
-    
+
     def read_image(image, size=512):
         return np.array(Image.fromarray(image).resize((size, size)))
-    
+
     # when user uploads a new video
-    motion_sequence.upload(
-        read_video,
-        motion_sequence,
-        motion_sequence
-    )
+    motion_sequence.upload(read_video, motion_sequence, motion_sequence)
     # when `first_frame` is updated
-    reference_image.upload(
-        read_image,
-        reference_image,
-        reference_image
-    )
+    reference_image.upload(read_image, reference_image, reference_image)
     # when the `submit` button is clicked
     submit.click(
         animate,
-        [reference_image, motion_sequence, random_seed, sampling_steps, guidance_scale], 
-        animation
+        [
+            reference_image,
+            motion_sequence,
+            random_seed,
+            sampling_steps,
+            guidance_scale,
+            gr.Radio(
+                [
+                    "densepose",
+                    "openpose",  # "animalpose"
+                ],
+                label="Controlnet Model",
+                value="densepose",
+            ),
+        ],
+        animation,
     )
 
     # Examples

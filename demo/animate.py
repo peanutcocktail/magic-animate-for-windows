@@ -29,7 +29,7 @@ from magicanimate.models.unet_controlnet import UNet3DConditionModel
 from magicanimate.models.controlnet import ControlNetModel
 from magicanimate.models.appearance_encoder import AppearanceEncoderModel
 from magicanimate.models.mutual_self_attention import ReferenceAttentionControl
-from magicanimate.models.model_util import load_models
+from magicanimate.models.model_util import load_models, torch_gc
 from magicanimate.pipelines.pipeline_animation import AnimationPipeline
 from magicanimate.utils.util import save_videos_grid
 from accelerate.utils import set_seed
@@ -44,19 +44,23 @@ import math
 from pathlib import Path
 
 class MagicAnimate:
-    def __init__(self, config="configs/prompts/animation.yaml") -> None:
+    def __init__(self, config="configs/prompts/animation.yaml",controlnet_model="densepose") -> None:
         print("Initializing MagicAnimate Pipeline...")
         *_, func_args = inspect.getargvalues(inspect.currentframe())
         func_args = dict(func_args)
 
+        self.config = config
+        
         config = OmegaConf.load(config)
-
+        
         inference_config = OmegaConf.load(config.inference_config)
 
         motion_module = config.motion_module
+        
+        self.controlnet_model = controlnet_model
 
         ### >>> create animation pipeline >>> ###
-        tokenizer, text_encoder, unet, noise_scheduler, vae = load_models(
+        self.tokenizer, self.text_encoder, self.unet, noise_scheduler, self.vae = load_models(
             config.pretrained_model_path,
             scheduler_name="",
             v2=False,
@@ -69,15 +73,15 @@ class MagicAnimate:
         #    config.pretrained_model_path, subfolder="text_encoder"
         # )
         if config.pretrained_unet_path:
-            unet = UNet3DConditionModel.from_pretrained_2d(
+            self.unet = UNet3DConditionModel.from_pretrained_2d(
                 config.pretrained_unet_path,
                 unet_additional_kwargs=OmegaConf.to_container(
                     inference_config.unet_additional_kwargs
                 ),
             )
         else:
-            unet = UNet3DConditionModel.from_pretrained_2d(
-                unet.config,
+            self.unet = UNet3DConditionModel.from_pretrained_2d(
+                self.unet.config,
                 subfolder=None,
                 unet_additional_kwargs=OmegaConf.to_container(
                     inference_config.unet_additional_kwargs
@@ -93,38 +97,44 @@ class MagicAnimate:
             fusion_blocks=config.fusion_blocks,
         )
         self.reference_control_reader = ReferenceAttentionControl(
-            unet,
+            self.unet,
             do_classifier_free_guidance=True,
             mode="read",
             fusion_blocks=config.fusion_blocks,
         )
 
         if config.pretrained_vae_path:
-            vae = AutoencoderKL.from_pretrained(config.pretrained_vae_path)
+            self.vae = AutoencoderKL.from_pretrained(config.pretrained_vae_path)
         # else:
         #    vae = AutoencoderKL.from_pretrained(
         #        config.pretrained_model_path, subfolder="vae"
         #    )
 
         ### Load controlnet
-        controlnet = ControlNetModel.from_pretrained(config.pretrained_controlnet_path)
+        if "openpose" in self.controlnet_model:
+            self.controlnet = ControlNetModel.from_pretrained(config.openpose_path)
+            print("Using OpenPose ControlNet")
+        else:
+            self.controlnet = ControlNetModel.from_pretrained(config.pretrained_controlnet_path)
+            print("Using Densepose ControlNet")
+        
 
-        vae.to(torch.float16)
-        unet.to(torch.float16)
-        text_encoder.to(torch.float16)
-        controlnet.to(torch.float16)
+        self.vae.to(torch.float16)
+        self.unet.to(torch.float16)
+        self.text_encoder.to(torch.float16)
+        self.controlnet.to(torch.float16)
         self.appearance_encoder.to(torch.float16)
 
-        unet.enable_xformers_memory_efficient_attention()
+        self.unet.enable_xformers_memory_efficient_attention()
         self.appearance_encoder.enable_xformers_memory_efficient_attention()
-        controlnet.enable_xformers_memory_efficient_attention()
+        self.controlnet.enable_xformers_memory_efficient_attention()
 
         self.pipeline = AnimationPipeline(
-            vae=vae,
-            text_encoder=text_encoder,
-            tokenizer=tokenizer,
-            unet=unet,
-            controlnet=controlnet,
+            vae=self.vae,
+            text_encoder=self.text_encoder,
+            tokenizer=self.tokenizer,
+            unet=self.unet,
+            controlnet=self.controlnet,
             scheduler=DDIMScheduler(
                 **OmegaConf.to_container(inference_config.noise_scheduler_kwargs)
             ),
@@ -165,7 +175,7 @@ class MagicAnimate:
                         _tmp_[_key] = motion_module_state_dict[key]
                     else:
                         _tmp_[key] = motion_module_state_dict[key]
-            missing, unexpected = unet.load_state_dict(_tmp_, strict=False)
+            missing, unexpected = self.unet.load_state_dict(_tmp_, strict=False)
             assert len(unexpected) == 0
             del _tmp_
         del motion_module_state_dict
@@ -175,9 +185,20 @@ class MagicAnimate:
 
         print("Initialization Done!")
 
+    def reset_init(instance, *args, **kwargs):
+        instance.__init__(*args, **kwargs)
+    
     def __call__(
-        self, source_image, motion_sequence, random_seed, step, guidance_scale, size=512
+        self, source_image, motion_sequence, random_seed, step, guidance_scale, controlnet_model="densepose", size=512,
     ):
+        if self.controlnet_model != controlnet_model:
+            self.vae.to("cpu")
+            self.unet.to("cpu")
+            self.text_encoder.to("cpu")
+            self.controlnet.to("cpu")
+            self.appearance_encoder.to("cpu")
+            torch_gc()
+            self.reset_init(config="configs/prompts/animation.yaml", controlnet_model=controlnet_model)
         prompt = n_prompt = ""
         random_seed = int(random_seed)
         step = int(step)
@@ -252,3 +273,5 @@ class MagicAnimate:
         save_videos_grid(samples_per_video, animation_path)
 
         return animation_path
+
+    

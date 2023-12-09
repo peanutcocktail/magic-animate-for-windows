@@ -263,3 +263,10 @@ def create_noise_scheduler(
         raise ValueError(f"Unknown scheduler name: {name}")
 
     return scheduler
+
+def torch_gc():
+    import gc; gc.collect()
+    if torch.cuda.is_available():
+        with torch.cuda.device("cuda"):
+            torch.cuda.empty_cache()
+            torch.cuda.ipc_collect()
