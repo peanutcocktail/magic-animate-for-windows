@@ -1,6 +1,5 @@
-$input_path="./vid2pose/sample_videos/input_video.mp4"
+$input_path="./inputs/cai-xukun.mp4"
 $output_path="./outputs/"
-$pose_model="dwpose"
 
 
 Set-Location $PSScriptRoot
@@ -19,9 +18,5 @@ if ($output_path) {
     [void]$ext_args.Add("-o=$output_path")
 }
 
-if ($pose_model) {
-    [void]$ext_args.Add("--pose_model=$pose_model")
-}
 
-
-python.exe "vid2pose/video2openpose2.py" $ext_args
+python.exe "video_controlnet_aux/src/video_controlnet_aux.py" $ext_args

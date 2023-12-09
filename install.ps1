@@ -33,5 +33,21 @@ if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq ""){
     }
 }
 
+$install_CNOP = Read-Host "Do you need to download control_v11p_sd15_openpose? If you want use it select y, if you dont want select n. [y/n] (Default is y)"
+if ($install_CNOP -eq "y" -or $install_CNOP -eq "Y" -or $install_CNOP -eq ""){
+    if (!(Test-Path -Path "control_v11p_sd15_openpose")) {
+    Write-Output  "Downloading control_v11p_sd15_openpose models..."
+    git clone https://huggingface.co/bdsqlsz/control_v11p_sd15_openpose
+    }
+}
+
+Write-Output "Installing Video_controlnet_aux..."
+
+git submodule update --recursive --init
+
+Set-Location $PSScriptRoot/video_controlnet_aux
+pip install -r requirements.txt -i https://mirror.baidu.com/pypi/simple
+pip install -r requirements-video.txt -i https://mirror.baidu.com/pypi/simple
+
 Write-Output "Install completed"
 Read-Host | Out-Null ;

@@ -1,7 +1,7 @@
-pretrained_model_path: "D:\\sd-webui-aki-v4.1\\models\\Stable-diffusion\\动漫\\cetusMix_v4.safetensors"
+pretrained_model_path: "pretrained_models/stable-diffusion-v1-5"
 pretrained_vae_path: ""
 pretrained_controlnet_path: "pretrained_models/MagicAnimate/densepose_controlnet"
-openpose_path: "pretrained_models/openpose"
+openpose_path: "pretrained_models/control_v11p_sd15_openpose"
 pretrained_appearance_encoder_path: "pretrained_models/MagicAnimate/appearance_encoder"
 pretrained_unet_path: ""
 

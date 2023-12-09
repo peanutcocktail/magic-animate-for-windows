@@ -3,35 +3,35 @@ Set-Location $PSScriptRoot
 $Env:PIP_DISABLE_PIP_VERSION_CHECK = 1
 
 if (!(Test-Path -Path "venv")) {
-    Write-Output  "åˆ›å»ºpythonè™šæ‹ŸçŽ¯å¢ƒvenv..."
+    Write-Output  "´´½¨pythonÐéÄâ»·¾³venv..."
     python -m venv venv
 }
 .\venv\Scripts\activate
 
-Write-Output "å®‰è£…ä¾èµ–..."
-pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
+Write-Output "°²×°ÒÀÀµ..."
+#pip install -U -r requirements-windows.txt -i https://mirror.baidu.com/pypi/simple
 
-Write-Output "æ£€æŸ¥æ¨¡åž‹..."
+Write-Output "¼ì²éÄ£ÐÍ..."
 
 if (!(Test-Path -Path "pretrained_models")) {
-    Write-Output  "åˆ›å»ºæ¨¡åž‹æ–‡ä»¶å¤¹..."
+    Write-Output  "´´½¨Ä£ÐÍÎÄ¼þ¼Ð..."
     mkdir "pretrained_models"
 }
 
 Set-Location .\pretrained_models
 
 if (!(Test-Path -Path "MagicAnimate")) {
-    Write-Output  "ä¸‹è½½MagicAnimateæ¨¡åž‹..."
+    Write-Output  "ÏÂÔØMagicAnimateÄ£ÐÍ..."
     git clone https://huggingface.co/zcxu-eric/MagicAnimate
 }
 if (Test-Path -Path "MagicAnimate/.git/lfs") {
     Remove-Item -Path MagicAnimate/.git/lfs/* -Recurse -Force
 }
 
-$install_SD15 = Read-Host "æ˜¯å¦éœ€è¦ä¸‹è½½huggingfaceçš„SD15æ¨¡åž‹? è‹¥æ‚¨æœ¬åœ°æ²¡æœ‰ä»»ä½•SD15æ¨¡åž‹é€‰æ‹©yï¼Œå¦‚æžœæƒ³è¦æ¢å…¶ä»–SD1.5æ¨¡åž‹é€‰æ‹© nã€‚[y/n] (é»˜è®¤ä¸º y)"
+$install_SD15 = Read-Host "ÊÇ·ñÐèÒªÏÂÔØhuggingfaceµÄSD15Ä£ÐÍ? ÈôÄú±¾µØÃ»ÓÐÈÎºÎSD15Ä£ÐÍÑ¡Ôñy£¬Èç¹ûÏëÒª»»ÆäËûSD1.5Ä£ÐÍÑ¡Ôñ n¡£[y/n] (Ä¬ÈÏÎª y)"
 if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq "") {
     if (!(Test-Path -Path "stable-diffusion-v1-5")) {
-        Write-Output  "ä¸‹è½½ stable-diffusion-v1-5 æ¨¡åž‹..."
+        Write-Output  "ÏÂÔØ stable-diffusion-v1-5 Ä£ÐÍ..."
         git clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
         
     }
@@ -40,18 +40,24 @@ if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq "") {
     }
 }
 
-Write-Output "å®‰è£…Video2Pose..."
+$install_CNOP = Read-Host "ÊÇ·ñÐèÒªÏÂÔØhuggingfaceµÄcontrol_v11p_sd15_openposeÄ£ÐÍ? ÈôÄúÏ£ÍûÊ¹ÓÃopenposeÑ¡Ôñy£¬Èç¹û²»ÐèÒªÑ¡Ôñ n¡£[y/n] (Ä¬ÈÏÎª y)"
+if ($install_CNOP -eq "y" -or $install_CNOP -eq "Y" -or $install_CNOP -eq ""){
+    if (!(Test-Path -Path "control_v11p_sd15_openpose")) {
+    Write-Output  "ÏÂÔØ control_v11p_sd15_openpose Ä£ÐÍ..."
+    git clone https://huggingface.co/bdsqlsz/control_v11p_sd15_openpose
+    }
+    if (Test-Path -Path "control_v11p_sd15_openpose/.git/lfs") {
+        Remove-Item -Path control_v11p_sd15_openpose/.git/lfs/* -Recurse -Force
+    }
+}
+
+Write-Output "°²×°Video_controlnet_aux..."
 
 git submodule update --recursive --init
 
-Set-Location $PSScriptRoot/vid2pose
-git submodule update --recursive --init
-pip install ninja
-pip install -U -r requirements.txt -i https://mirror.baidu.com/pypi/simple
-mim install mmengine
-mim install "mmcv>=2.0.1"
-mim install "mmdet>=3.1.0"
-mim install "mmpose>=1.1.0"
+Set-Location $PSScriptRoot/video_controlnet_aux
+pip install -r requirements.txt -i https://mirror.baidu.com/pypi/simple
+pip install -r requirements-video.txt -i https://mirror.baidu.com/pypi/simple
 
-Write-Output "å®‰è£…å®Œæ¯•"
+Write-Output "°²×°Íê±Ï"
 Read-Host | Out-Null ;
