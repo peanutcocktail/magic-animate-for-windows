@@ -65,6 +65,10 @@ Give unrestricted script access to powershell so venv can work:
 - Type `Set-ExecutionPolicy Unrestricted` and answer A
 - Close admin powershell window
 
+```
+git clone --recurse-submodules https://github.com/sdbds/magic-animate-for-windows/
+```
+
 Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
 
 ###Use local model
