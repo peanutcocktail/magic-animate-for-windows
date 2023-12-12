@@ -25,6 +25,7 @@ def animate(
     seed,
     steps,
     guidance_scale,
+    debug,
     controlnet_model,
 ):
     return animator(
@@ -33,6 +34,7 @@ def animate(
         seed,
         steps,
         guidance_scale,
+        debug,
         controlnet_model,
     )
 
@@ -69,6 +71,7 @@ with gr.Blocks() as demo:
             guidance_scale = gr.Textbox(
                 label="Guidance scale", value=7.5, info="default: 7.5"
             )
+            debug = gr.Checkbox(label="Debug", value=True)
             submit = gr.Button("Animate")
 
     def read_video(video):
@@ -92,6 +95,7 @@ with gr.Blocks() as demo:
             random_seed,
             sampling_steps,
             guidance_scale,
+            debug,
             gr.Radio(
                 [
                     "densepose",

@@ -43,24 +43,33 @@ from safetensors import safe_open
 import math
 from pathlib import Path
 
+
 class MagicAnimate:
-    def __init__(self, config="configs/prompts/animation.yaml",controlnet_model="densepose") -> None:
+    def __init__(
+        self, config="configs/prompts/animation.yaml", controlnet_model="densepose"
+    ) -> None:
         print("Initializing MagicAnimate Pipeline...")
         *_, func_args = inspect.getargvalues(inspect.currentframe())
         func_args = dict(func_args)
 
         self.config = config
-        
+
         config = OmegaConf.load(config)
-        
+
         inference_config = OmegaConf.load(config.inference_config)
 
         motion_module = config.motion_module
-        
+
         self.controlnet_model = controlnet_model
 
         ### >>> create animation pipeline >>> ###
-        self.tokenizer, self.text_encoder, self.unet, noise_scheduler, self.vae = load_models(
+        (
+            self.tokenizer,
+            self.text_encoder,
+            self.unet,
+            noise_scheduler,
+            self.vae,
+        ) = load_models(
             config.pretrained_model_path,
             scheduler_name="",
             v2=False,
@@ -115,9 +124,10 @@ class MagicAnimate:
             self.controlnet = ControlNetModel.from_pretrained(config.openpose_path)
             print("Using OpenPose ControlNet")
         else:
-            self.controlnet = ControlNetModel.from_pretrained(config.pretrained_controlnet_path)
+            self.controlnet = ControlNetModel.from_pretrained(
+                config.pretrained_controlnet_path
+            )
             print("Using Densepose ControlNet")
-        
 
         self.vae.to(torch.float16)
         self.unet.to(torch.float16)
@@ -187,9 +197,17 @@ class MagicAnimate:
 
     def reset_init(instance, *args, **kwargs):
         instance.__init__(*args, **kwargs)
-    
+
     def __call__(
-        self, source_image, motion_sequence, random_seed, step, guidance_scale, controlnet_model="densepose", size=512,
+        self,
+        source_image,
+        motion_sequence,
+        random_seed,
+        step,
+        guidance_scale,
+        debug,
+        controlnet_model="densepose",
+        size=512,
     ):
         if self.controlnet_model != controlnet_model:
             self.vae.to("cpu")
@@ -198,7 +216,10 @@ class MagicAnimate:
             self.controlnet.to("cpu")
             self.appearance_encoder.to("cpu")
             torch_gc()
-            self.reset_init(config="configs/prompts/animation.yaml", controlnet_model=controlnet_model)
+            self.reset_init(
+                config="configs/prompts/animation.yaml",
+                controlnet_model=controlnet_model,
+            )
         prompt = n_prompt = ""
         random_seed = int(random_seed)
         step = int(step)
@@ -250,16 +271,18 @@ class MagicAnimate:
             source_image=source_image,
         ).videos
 
-        source_images = np.array([source_image] * original_length)
-        source_images = (
-            rearrange(torch.from_numpy(source_images), "t h w c -> 1 c t h w") / 255.0
-        )
-        samples_per_video.append(source_images)
+        if debug:
+            source_images = np.array([source_image] * original_length)
+            source_images = (
+                rearrange(torch.from_numpy(source_images), "t h w c -> 1 c t h w")
+                / 255.0
+            )
+            samples_per_video.append(source_images)
 
-        control = control / 255.0
-        control = rearrange(control, "t h w c -> 1 c t h w")
-        control = torch.from_numpy(control)
-        samples_per_video.append(control[:, :, :original_length])
+            control = control / 255.0
+            control = rearrange(control, "t h w c -> 1 c t h w")
+            control = torch.from_numpy(control)
+            samples_per_video.append(control[:, :, :original_length])
 
         samples_per_video.append(sample[:, :, :original_length])
 
@@ -273,5 +296,3 @@ class MagicAnimate:
         save_videos_grid(samples_per_video, animation_path)
 
         return animation_path
-
-    

@@ -114,5 +114,6 @@ with gr.Blocks() as demo:
         outputs=animation,
     )
 
-# demo.queue(max_size=10)
+
+demo.queue(max_size=10)
 demo.launch(share=True)
