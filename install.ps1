@@ -22,14 +22,15 @@ Set-Location .\pretrained_models
 
 if (!(Test-Path -Path "MagicAnimate")) {
     Write-Output  "Downloading MagicAnimate models..."
-    git clone https://huggingface.co/zcxu-eric/MagicAnimate
+    git lfs install
+    git lfs clone https://huggingface.co/zcxu-eric/MagicAnimate
 }
 
 $install_SD15 = Read-Host "Do you need to download SD15? If you don't have any SD15 model locally select y, if you want to change to another SD1.5 model select n. [y/n] (Default is y)"
 if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq ""){
     if (!(Test-Path -Path "stable-diffusion-v1-5")) {
     Write-Output  "Downloading stable-diffusion-v1-5 models..."
-    git clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
+    git lfs clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
     }
 }
 
@@ -37,7 +38,7 @@ $install_CNOP = Read-Host "Do you need to download control_v11p_sd15_openpose? I
 if ($install_CNOP -eq "y" -or $install_CNOP -eq "Y" -or $install_CNOP -eq ""){
     if (!(Test-Path -Path "control_v11p_sd15_openpose")) {
     Write-Output  "Downloading control_v11p_sd15_openpose models..."
-    git clone https://huggingface.co/bdsqlsz/control_v11p_sd15_openpose
+    git lfs clone https://huggingface.co/bdsqlsz/control_v11p_sd15_openpose
     }
 }
 

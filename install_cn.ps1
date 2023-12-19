@@ -22,7 +22,8 @@ Set-Location .\pretrained_models
 
 if (!(Test-Path -Path "MagicAnimate")) {
     Write-Output  "下载MagicAnimate模型..."
-    git clone https://huggingface.co/zcxu-eric/MagicAnimate
+    git lfs install
+    git lfs clone https://huggingface.co/zcxu-eric/MagicAnimate
 }
 if (Test-Path -Path "MagicAnimate/.git/lfs") {
     Remove-Item -Path MagicAnimate/.git/lfs/* -Recurse -Force
@@ -32,7 +33,7 @@ $install_SD15 = Read-Host "是否需要下载huggingface的SD15模型? 若您本地没有任何SD
 if ($install_SD15 -eq "y" -or $install_SD15 -eq "Y" -or $install_SD15 -eq "") {
     if (!(Test-Path -Path "stable-diffusion-v1-5")) {
         Write-Output  "下载 stable-diffusion-v1-5 模型..."
-        git clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
+        git lfs clone https://huggingface.co/bdsqlsz/stable-diffusion-v1-5
         
     }
     if (Test-Path -Path "stable-diffusion-v1-5/.git/lfs") {
@@ -44,7 +45,7 @@ $install_CNOP = Read-Host "是否需要下载huggingface的control_v11p_sd15_openpose模
 if ($install_CNOP -eq "y" -or $install_CNOP -eq "Y" -or $install_CNOP -eq ""){
     if (!(Test-Path -Path "control_v11p_sd15_openpose")) {
     Write-Output  "下载 control_v11p_sd15_openpose 模型..."
-    git clone https://huggingface.co/bdsqlsz/control_v11p_sd15_openpose
+    git lfs clone https://huggingface.co/bdsqlsz/control_v11p_sd15_openpose
     }
     if (Test-Path -Path "control_v11p_sd15_openpose/.git/lfs") {
         Remove-Item -Path control_v11p_sd15_openpose/.git/lfs/* -Recurse -Force
